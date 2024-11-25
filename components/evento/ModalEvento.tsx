@@ -36,7 +36,7 @@ export default function ModalEvento({
   };
 
   const showDatePicker = () => {
-    setShow(true);
+    setShow(!show);
   };
 
   return (
@@ -67,7 +67,7 @@ export default function ModalEvento({
             <Text>Selecionado: {data.toLocaleString()}</Text>
             {show && (
               <View style={styles.datePickerContainer}>
-                <DateTimePicker value={data} onChange={handleChange} />
+                <DateTimePicker minDate={new Date()} value={data} onChange={handleChange} />
               </View>
             )}
 

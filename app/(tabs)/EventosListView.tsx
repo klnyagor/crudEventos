@@ -41,17 +41,27 @@ export default function EventosListView() {
         />
       }
     >
-        <ThemedView style={styles.headerContainer}>
-            <TouchableOpacity onPress={() => handleModal()} style={styles.buttonAdd}>
-            <MaterialIcons name="add-circle-outline" size={24} color="black" />
-            </TouchableOpacity>
-        </ThemedView>
+      <ThemedView style={styles.headerContainer}>
+        <TouchableOpacity
+          onPress={() => handleModal()}
+          style={styles.buttonAdd}
+        >
+          <MaterialIcons name="add-circle-outline" size={24} color="black" />
+        </TouchableOpacity>
+      </ThemedView>
 
-        <ModalEvento visible={showModal} onAdd={onAdd} onCancel={handleModal} />
+      <ModalEvento visible={showModal} onAdd={onAdd} onCancel={handleModal} />
 
-        <ThemedView style={styles.container}>
-            {eventos.map(evento => <Evento key={evento.id} titulo={evento.titulo} descricao={evento.descricao} data={evento.data} />)}
-        </ThemedView>
+      <ThemedView style={styles.container}>
+        {eventos.map((evento) => (
+          <Evento
+            key={evento.id}
+            titulo={evento.titulo}
+            descricao={evento.descricao}
+            data={evento.data}
+          />
+        ))}
+      </ThemedView>
     </ParallaxScrollView>
   );
 }
@@ -64,12 +74,12 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   headerContainer: {
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignItems: "center",
+    justifyContent: "center",
   },
   container: {
     flex: 1,
-    backgroundColor: 'gray'
+    backgroundColor: "gray",
   },
   buttonAdd: {
     backgroundColor: "green",
