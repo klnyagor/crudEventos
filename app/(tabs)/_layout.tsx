@@ -56,6 +56,16 @@ export default function TabLayout() {
           ),
         }}
       />
+
+<Tabs.Screen
+        name="InscritosListView"
+        options={{
+          title: "Inscrição",
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="format-list-bulleted-add" size={28} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
