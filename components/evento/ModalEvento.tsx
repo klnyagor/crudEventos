@@ -1,5 +1,5 @@
 import DateTimePicker from "react-datetime-picker";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Modal,
@@ -10,11 +10,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { IEvento } from "@/interfaces/IEvento";
 
 export type ModalEventoProps = {
   visible: boolean;
-  onAdd: (titulo: string, descricao: string, data: Date) => void;
+  onAdd: (titulo: string, descricao: string, data: Date, id: number) => void;
   onCancel: () => void;
+  evento?: IEvento;
 };
 
 type ValuePiece = Date | null;
@@ -24,9 +26,25 @@ export default function ModalEvento({
   visible,
   onAdd,
   onCancel,
+  evento
 }: ModalEventoProps) {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [id, setId] = useState<number>(0);
+
+  useEffect(() => {
+    if(evento){
+      setId(evento.id);
+      setTitulo(evento.titulo);
+      setDescricao(evento.descricao);
+      setData(evento.data);
+    }else{
+      setId(0);
+      setTitulo('');
+      setDescricao('');
+      setData(new Date());
+    }
+  }, [evento])
 
   const [show, setShow] = useState(false);
   const [data, setData] = useState<Value>(new Date());
@@ -74,7 +92,7 @@ export default function ModalEvento({
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={styles.buttonAdd}
-                onPress={() => onAdd(titulo, descricao, data)}
+                onPress={() => onAdd(titulo, descricao, data, id)}
               >
                 <Text>Confirmar</Text>
               </TouchableOpacity>
@@ -124,7 +142,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   buttonCancel: {
-    backgroundColor: "red",
+    backgroundColor: "orange",
     borderRadius: 5,
     flex: 1,
     alignItems: "center",

@@ -1,7 +1,7 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { IEvento } from "@/interfaces/IEvento";
 import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedView } from "@/components/ThemedView";
 import Evento from "@/components/evento/Evento";
@@ -9,23 +9,49 @@ import ModalEvento from "@/components/evento/ModalEvento";
 
 export default function EventosListView() {
   const [eventos, setEventos] = useState<IEvento[]>([]);
+  const [selectedEvento, setSelectedEvento] = useState<IEvento>();
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const onAdd = (titulo: string, descricao: string, data: Date) => {
-    const novoEvento: IEvento = {
-      id: Math.random() * 1000,
-      titulo: titulo,
-      descricao: descricao,
-      data: data,
-    };
+  const onAdd = (
+    titulo: string,
+    descricao: string,
+    data: Date,
+    id?: number
+  ) => {
+    if (!id || id <= 0) {
+      const novoEvento: IEvento = {
+        id: Math.random() * 1000,
+        titulo: titulo,
+        descricao: descricao,
+        data: data,
+      };
 
-    const eventosADD: IEvento[] = [...eventos, novoEvento];
-    setEventos(eventosADD);
+      const eventosADD: IEvento[] = [...eventos, novoEvento];
+      setEventos(eventosADD);
+    } else {
+      eventos.forEach((evento) => {
+        if (evento.id == id) {
+          evento.titulo = titulo;
+          evento.descricao = descricao;
+          evento.data = data;
+        }
+      });
+    }
 
-    setShowModal(!showModal);
+    setShowModal(false);
+  };
+
+  const onDelete = (id: number) => {
+    setEventos((prevEvento) => prevEvento.filter((item) => item.id !== id));
   };
 
   const handleModal = () => {
+    setSelectedEvento(undefined);
+    setShowModal(!showModal);
+  };
+
+  const handleEditModal = (selectedEvento: IEvento) => {
+    setSelectedEvento(selectedEvento);
     setShowModal(!showModal);
   };
 
@@ -50,16 +76,31 @@ export default function EventosListView() {
         </TouchableOpacity>
       </ThemedView>
 
-      <ModalEvento visible={showModal} onAdd={onAdd} onCancel={handleModal} />
+      <ModalEvento
+        visible={showModal}
+        onAdd={onAdd}
+        onCancel={handleModal}
+        evento={selectedEvento}
+      />
 
       <ThemedView style={styles.container}>
         {eventos.map((evento) => (
-          <Evento
-            key={evento.id}
-            titulo={evento.titulo}
-            descricao={evento.descricao}
-            data={evento.data}
-          />
+          <View style={styles.boxContainer} key={evento.id}>
+            <Evento
+              titulo={evento.titulo}
+              descricao={evento.descricao}
+              data={evento.data}
+            />
+            <TouchableOpacity onPress={() => handleEditModal(evento)}>
+              <MaterialIcons name="edit" size={24} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => onDelete(evento.id)}
+                style={styles.icon}
+              >
+                <MaterialIcons name="delete-forever" size={24} color="black" />
+              </TouchableOpacity>
+          </View>
         ))}
       </ThemedView>
     </ParallaxScrollView>
@@ -81,6 +122,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "gray",
   },
+  boxContainer: {
+    flex: 1,
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 20,
+    flexDirection: "row",
+  },
   buttonAdd: {
     backgroundColor: "green",
     borderRadius: 50,
@@ -89,5 +139,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     margin: 1,
     padding: 5,
+  },
+  icons: {
+    flexDirection: "column",
+    alignItems: "flex-end",
+    justifyContent: "flex-end",
+  },
+  icon: {
+    margin: 10,
+    backgroundColor: "gray",
   },
 });
