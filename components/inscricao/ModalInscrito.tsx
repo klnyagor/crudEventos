@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { IInscricao } from "@/interfaces/IInscricao";
+import React, { useEffect, useState } from "react";
 import {
-  Button,
   Modal,
   ScrollView,
   StyleSheet,
@@ -12,17 +12,32 @@ import {
 
 export type ModalInscritoProps = {
   visible: boolean;
-  onAdd: (inscrito: string, evento: string) => void;
+  onAdd: (inscrito: string, evento: string, id: number) => void;
   onCancel: () => void;
+  inscricao?: IInscricao;
 };
 
 export default function ModalInscrito({
   visible,
   onAdd,
   onCancel,
+  inscricao,
 }: ModalInscritoProps) {
   const [inscrito, setInscrito] = useState("");
   const [evento, setEvento] = useState("");
+  const [id, setId] = useState<number>(0);
+
+  useEffect(() => {
+    if(inscricao){
+      setId(inscricao.id);
+      setInscrito(inscricao.inscrito);
+      setEvento(inscricao.evento);
+    }else{
+      setId(0);
+      setInscrito('');
+      setEvento('');
+    }
+  }, [inscricao])
 
   return (
     <Modal
@@ -51,7 +66,7 @@ export default function ModalInscrito({
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={styles.buttonAdd}
-                onPress={() => onAdd(inscrito, evento)}
+                onPress={() => onAdd(inscrito, evento, id)}
               >
                 <Text>Confirmar</Text>
               </TouchableOpacity>
@@ -113,15 +128,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 10,
     height: 70,
-  },
-
-  datePickerContainer: {
-    marginTop: 20,
-    width: "100%", // Garante que o DateTimePicker ocupe a largura disponível
-    paddingHorizontal: 10,
-    borderRadius: 10,
-    backgroundColor: "#f0f0f0",
-    paddingVertical: 15, // Adiciona espaçamento vertical
-    alignItems: "center",
   },
 });

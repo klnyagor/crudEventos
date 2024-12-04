@@ -1,6 +1,6 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedView } from "@/components/ThemedView";
 import { IInscricao } from "@/interfaces/IInscricao";
@@ -8,23 +8,43 @@ import ModalInscrito from "@/components/inscricao/ModalInscrito";
 import Inscricao from "@/components/inscricao/Inscricao";
 
 export default function InscritosListView() {
-  const [inscritos, setInscrito] = useState<IInscricao[]>([]);
+  const [inscritos, setInscritos] = useState<IInscricao[]>([]);
+  const [selectedInscrito, setSelectedInscrito] = useState<IInscricao>();
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const onAdd = (inscrito: string, evento: string) => {
-    const novoInscrito: IInscricao = {
-      id: Math.random() * 1000,
-      inscrito: inscrito,
-      evento: evento
-    };
+  const onAdd = (inscrito: string, evento: string, id?: number) => {
+    if (!id || id <= 0) {
+      const novoInscrito: IInscricao = {
+        id: Math.random() * 1000,
+        inscrito: inscrito,
+        evento: evento,
+      };
 
-    const inscritoADD: IInscricao[] = [...inscritos, novoInscrito];
-    setInscrito(inscritoADD);
+      const inscritoADD: IInscricao[] = [...inscritos, novoInscrito];
+      setInscritos(inscritoADD);
+    } else {
+      inscritos.forEach((inscricao) => {
+        if (inscricao.id == id) {
+          inscricao.inscrito = inscrito;
+          inscricao.evento = evento;
+        }
+      });
+    }
 
     setShowModal(!showModal);
   };
 
+  const onDelete = (id: number) => {
+    setInscritos((prevEvento) => prevEvento.filter((item) => item.id !== id));
+  };
+
   const handleModal = () => {
+    setSelectedInscrito(undefined);
+    setShowModal(!showModal);
+  };
+
+  const handleEditModal = (selectedInscrito: IInscricao) => {
+    setSelectedInscrito(selectedInscrito);
     setShowModal(!showModal);
   };
 
@@ -49,15 +69,32 @@ export default function InscritosListView() {
         </TouchableOpacity>
       </ThemedView>
 
-      <ModalInscrito visible={showModal} onAdd={onAdd} onCancel={handleModal} />
+      <ModalInscrito
+        visible={showModal}
+        onAdd={onAdd}
+        onCancel={handleModal}
+        inscricao={selectedInscrito}
+      />
 
       <ThemedView style={styles.container}>
         {inscritos.map((inscrito) => (
-          <Inscricao
-            key={inscrito.id}
-            inscrito={inscrito.inscrito}
-            evento={inscrito.evento}
-          />
+          <View style={styles.boxContainer} key={inscrito.id}>
+            <Inscricao inscrito={inscrito.inscrito} evento={inscrito.evento} />
+            <View style={styles.icons}>
+              <TouchableOpacity
+                style={styles.icon}
+                onPress={() => handleEditModal(inscrito)}
+              >
+                <MaterialIcons name="edit" size={24} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => onDelete(inscrito.id)}
+                style={styles.icon}
+              >
+                <MaterialIcons name="delete-forever" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
         ))}
       </ThemedView>
     </ParallaxScrollView>
@@ -79,6 +116,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "gray",
   },
+  boxContainer: {
+    flex: 1,
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 20,
+    flexDirection: "row",
+  },
   buttonAdd: {
     backgroundColor: "green",
     borderRadius: 50,
@@ -87,5 +133,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     margin: 1,
     padding: 5,
+  },
+  icons: {
+    flexDirection: "column",
+    alignItems: "flex-end",
+    justifyContent: "flex-end",
+  },
+  icon: {
+    margin: 10,
+    backgroundColor: "gray",
   },
 });
