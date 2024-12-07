@@ -1,18 +1,34 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedView } from "@/components/ThemedView";
 import { IInscricao } from "@/interfaces/IInscricao";
 import ModalInscrito from "@/components/inscricao/ModalInscrito";
 import Inscricao from "@/components/inscricao/Inscricao";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function InscritosListView() {
+  const DATASTORAGE = '@crudEventos';
   const [inscritos, setInscritos] = useState<IInscricao[]>([]);
   const [selectedInscrito, setSelectedInscrito] = useState<IInscricao>();
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const onAdd = (inscrito: string, evento: string, id?: number) => {
+  const getStorage = async () => {
+    try {
+      const storage = await AsyncStorage.getItem(`${DATASTORAGE}:inscritos`);
+      const inscritosStorage = storage != null ? JSON.parse(storage) : [];
+      setInscritos(inscritosStorage);
+    } catch (err) {
+      console.error({'Erro': err});
+    }
+  }
+
+  const handleSetStorage = async (inscritos: IInscricao[]) => {
+    AsyncStorage.setItem(`${DATASTORAGE}:inscritos`, JSON.stringify(inscritos));
+  };
+
+  const onAdd = async (inscrito: string, evento: string, id?: number) => {
     if (!id || id <= 0) {
       const novoInscrito: IInscricao = {
         id: Math.random() * 1000,
@@ -22,6 +38,7 @@ export default function InscritosListView() {
 
       const inscritoADD: IInscricao[] = [...inscritos, novoInscrito];
       setInscritos(inscritoADD);
+      handleSetStorage(inscritoADD);
     } else {
       inscritos.forEach((inscricao) => {
         if (inscricao.id == id) {
@@ -29,13 +46,21 @@ export default function InscritosListView() {
           inscricao.evento = evento;
         }
       });
+      handleSetStorage(inscritos);
     }
 
     setShowModal(!showModal);
   };
 
-  const onDelete = (id: number) => {
-    setInscritos((prevEvento) => prevEvento.filter((item) => item.id !== id));
+  useEffect(() =>{
+    getStorage();
+  }, [])
+
+  const onDelete = async (id: number) => {
+    const delInscrito = (prevInscritos: IInscricao[]) => prevInscritos.filter((item) => item.id !== id);
+    const inscritosUpdt = delInscrito(inscritos);
+    setInscritos(inscritosUpdt);
+    handleSetStorage(inscritosUpdt);
   };
 
   const handleModal = () => {
