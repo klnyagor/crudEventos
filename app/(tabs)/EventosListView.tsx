@@ -1,16 +1,32 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { IEvento } from "@/interfaces/IEvento";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedView } from "@/components/ThemedView";
 import Evento from "@/components/evento/Evento";
 import ModalEvento from "@/components/evento/ModalEvento";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function EventosListView() {
+  const DATASTORAGE = '@crudEventos';
   const [eventos, setEventos] = useState<IEvento[]>([]);
   const [selectedEvento, setSelectedEvento] = useState<IEvento>();
   const [showModal, setShowModal] = useState<boolean>(false);
+
+  const getStorage = async () => {
+    try {
+      const storage = await AsyncStorage.getItem(`${DATASTORAGE}:eventos`);
+      const eventosStorage = storage != null ? JSON.parse(storage) : [];
+      setEventos(eventosStorage);
+    } catch (err) {
+      console.error({'Erro': err});
+    }
+  }
+
+  const handleSetStorage = async (eventos: IEvento[]) => {
+    AsyncStorage.setItem(`${DATASTORAGE}:eventos`, JSON.stringify(eventos));
+  };
 
   const onAdd = (
     titulo: string,
@@ -28,6 +44,7 @@ export default function EventosListView() {
 
       const eventosADD: IEvento[] = [...eventos, novoEvento];
       setEventos(eventosADD);
+      handleSetStorage(eventosADD);
     } else {
       eventos.forEach((evento) => {
         if (evento.id == id) {
@@ -36,13 +53,18 @@ export default function EventosListView() {
           evento.data = data;
         }
       });
+      handleSetStorage(eventos);
     }
 
     setShowModal(false);
   };
 
   const onDelete = (id: number) => {
-    setEventos((prevEvento) => prevEvento.filter((item) => item.id !== id));
+    // setEventos((prevEvento) => prevEvento.filter((item) => item.id !== id));
+    const delEvento = (prevEvento: IEvento[]) => prevEvento.filter((item) => item.id !== id);
+    const eventosUpdt = delEvento(eventos);
+    setEventos(eventosUpdt);
+    handleSetStorage(eventosUpdt);
   };
 
   const handleModal = () => {
@@ -54,6 +76,10 @@ export default function EventosListView() {
     setSelectedEvento(selectedEvento);
     setShowModal(!showModal);
   };
+
+  useEffect(() => {
+    getStorage();
+  }, [])
 
   return (
     <ParallaxScrollView

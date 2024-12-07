@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -13,7 +14,7 @@ export default function Evento({titulo, descricao, data}: EventoProps) {
         <View style={styles.box}>
             <Text style={styles.title}>{titulo}</Text>
             <Text style={styles.subTitle}>{descricao}</Text>
-            <Text style={styles.subTitle}>{data.toLocaleString()}</Text>
+            <Text style={styles.subTitle}>{format(data, 'dd/MM/yyyy HH:mm')}</Text>
         </View>
     );
 }

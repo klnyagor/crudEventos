@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { IEvento } from "@/interfaces/IEvento";
+import { format } from "date-fns";
 
 export type ModalEventoProps = {
   visible: boolean;
@@ -82,7 +83,7 @@ export default function ModalEvento({
             />
 
             <Button onPress={showDatePicker} title="Selecionar data" />
-            <Text>Selecionado: {data.toLocaleString()}</Text>
+            <Text>Selecionado: {format(data, 'dd/MM/yyyy HH:mm')}</Text>
             {show && (
               <View style={styles.datePickerContainer}>
                 <DateTimePicker minDate={new Date()} value={data} onChange={handleChange} />
