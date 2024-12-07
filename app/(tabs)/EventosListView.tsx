@@ -27,6 +27,10 @@ export default function EventosListView() {
   const handleSetStorage = async (eventos: IEvento[]) => {
     AsyncStorage.setItem(`${DATASTORAGE}:eventos`, JSON.stringify(eventos));
   };
+  
+  useEffect(() => {
+    getStorage();
+  }, [])
 
   const onAdd = (
     titulo: string,
@@ -76,10 +80,6 @@ export default function EventosListView() {
     setSelectedEvento(selectedEvento);
     setShowModal(!showModal);
   };
-
-  useEffect(() => {
-    getStorage();
-  }, [])
 
   return (
     <ParallaxScrollView

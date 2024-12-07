@@ -28,6 +28,10 @@ export default function InscritosListView() {
     AsyncStorage.setItem(`${DATASTORAGE}:inscritos`, JSON.stringify(inscritos));
   };
 
+  useEffect(() =>{
+    getStorage();
+  }, [])
+
   const onAdd = async (inscrito: string, evento: string, id?: number) => {
     if (!id || id <= 0) {
       const novoInscrito: IInscricao = {
@@ -51,10 +55,6 @@ export default function InscritosListView() {
 
     setShowModal(!showModal);
   };
-
-  useEffect(() =>{
-    getStorage();
-  }, [])
 
   const onDelete = async (id: number) => {
     const delInscrito = (prevInscritos: IInscricao[]) => prevInscritos.filter((item) => item.id !== id);

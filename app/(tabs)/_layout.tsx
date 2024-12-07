@@ -4,7 +4,7 @@ import { Platform } from "react-native";
 
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -33,7 +33,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
+            <IconSymbol size={26} name="house.fill" color={color} />
           ),
         }}
       />
@@ -42,7 +42,7 @@ export default function TabLayout() {
         options={{
           title: "Explore",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="paperplane.fill" color={color} />
+            <IconSymbol size={26} name="paperplane.fill" color={color} />
           ),
         }}
       />
@@ -52,17 +52,31 @@ export default function TabLayout() {
         options={{
           title: "Meus Eventos",
           tabBarIcon: ({ color }) => (
-            <MaterialIcons name="event" size={28} color={color} />
+            <MaterialIcons name="event" size={26} color={color} />
           ),
         }}
       />
 
-<Tabs.Screen
+      <Tabs.Screen
         name="InscritosListView"
         options={{
           title: "Inscrição",
           tabBarIcon: ({ color }) => (
-            <MaterialIcons name="format-list-bulleted-add" size={28} color={color} />
+            <MaterialIcons
+              name="format-list-bulleted-add"
+              size={26}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="LocationView"
+        options={{
+          title: "Location",
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons name="share-location" size={26} color={ color } />
           ),
         }}
       />
