@@ -7,6 +7,7 @@ import { IInscricao } from "@/interfaces/IInscricao";
 import ModalInscrito from "@/components/inscricao/ModalInscrito";
 import Inscricao from "@/components/inscricao/Inscricao";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 export default function InscritosListView() {
   const DATASTORAGE = '@crudEventos';
@@ -27,6 +28,10 @@ export default function InscritosListView() {
   const handleSetStorage = async (inscritos: IInscricao[]) => {
     AsyncStorage.setItem(`${DATASTORAGE}:inscritos`, JSON.stringify(inscritos));
   };
+
+  const navigateToDetails = (selectedInscrito: IInscricao) => {
+      router.push({ pathname: "/Screens/InscritosDetailScreen", params: {inscritoId: selectedInscrito.id} })
+    };
 
   useEffect(() =>{
     getStorage();
@@ -56,22 +61,22 @@ export default function InscritosListView() {
     setShowModal(!showModal);
   };
 
-  const onDelete = async (id: number) => {
-    const delInscrito = (prevInscritos: IInscricao[]) => prevInscritos.filter((item) => item.id !== id);
-    const inscritosUpdt = delInscrito(inscritos);
-    setInscritos(inscritosUpdt);
-    handleSetStorage(inscritosUpdt);
-  };
+  // const onDelete = async (id: number) => {
+  //   const delInscrito = (prevInscritos: IInscricao[]) => prevInscritos.filter((item) => item.id !== id);
+  //   const inscritosUpdt = delInscrito(inscritos);
+  //   setInscritos(inscritosUpdt);
+  //   handleSetStorage(inscritosUpdt);
+  // };
 
   const handleModal = () => {
     setSelectedInscrito(undefined);
     setShowModal(!showModal);
   };
 
-  const handleEditModal = (selectedInscrito: IInscricao) => {
-    setSelectedInscrito(selectedInscrito);
-    setShowModal(!showModal);
-  };
+  // const handleEditModal = (selectedInscrito: IInscricao) => {
+  //   setSelectedInscrito(selectedInscrito);
+  //   setShowModal(!showModal);
+  // };
 
   return (
     <ParallaxScrollView
@@ -102,7 +107,15 @@ export default function InscritosListView() {
       />
 
       <ThemedView style={styles.container}>
-        {inscritos.map((inscrito) => (
+        {
+          inscritos.map(inscrito => 
+            <TouchableOpacity key={inscrito.id} onPress={()=> navigateToDetails(inscrito)}>
+              <Inscricao inscrito={inscrito.inscrito} evento={inscrito.evento} />
+            </TouchableOpacity>
+          )
+        }
+        
+        {/* {inscritos.map((inscrito) => (
           <View style={styles.boxContainer} key={inscrito.id}>
             <Inscricao inscrito={inscrito.inscrito} evento={inscrito.evento} />
             <View style={styles.icons}>
@@ -120,7 +133,7 @@ export default function InscritosListView() {
               </TouchableOpacity>
             </View>
           </View>
-        ))}
+        ))} */}
       </ThemedView>
     </ParallaxScrollView>
   );

@@ -1,12 +1,13 @@
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { IEvento } from "@/interfaces/IEvento";
 import { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedView } from "@/components/ThemedView";
 import Evento from "@/components/evento/Evento";
 import ModalEvento from "@/components/evento/ModalEvento";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from 'expo-router';
 
 export default function EventosListView() {
   const DATASTORAGE = '@crudEventos';
@@ -27,12 +28,16 @@ export default function EventosListView() {
   const handleSetStorage = async (eventos: IEvento[]) => {
     AsyncStorage.setItem(`${DATASTORAGE}:eventos`, JSON.stringify(eventos));
   };
-  
+
+  const navigateToDetails = (selectedEvento: IEvento) => {
+    router.push({ pathname: "/Screens/EventosDetailScreen", params: {eventoId: selectedEvento.id} })
+  };
+
   useEffect(() => {
     getStorage();
   }, [])
 
-  const onAdd = (
+  const onAdd = async (
     titulo: string,
     descricao: string,
     data: Date,
@@ -63,23 +68,23 @@ export default function EventosListView() {
     setShowModal(false);
   };
 
-  const onDelete = (id: number) => {
-    // setEventos((prevEvento) => prevEvento.filter((item) => item.id !== id));
-    const delEvento = (prevEvento: IEvento[]) => prevEvento.filter((item) => item.id !== id);
-    const eventosUpdt = delEvento(eventos);
-    setEventos(eventosUpdt);
-    handleSetStorage(eventosUpdt);
-  };
+  // const onDelete = async (id: number) => {
+  //   // setEventos((prevEvento) => prevEvento.filter((item) => item.id !== id));
+  //   const delEvento = (prevEvento: IEvento[]) => prevEvento.filter((item) => item.id !== id);
+  //   const eventosUpdt = delEvento(eventos);
+  //   setEventos(eventosUpdt);
+  //   handleSetStorage(eventosUpdt);
+  // };
 
   const handleModal = () => {
     setSelectedEvento(undefined);
     setShowModal(!showModal);
   };
 
-  const handleEditModal = (selectedEvento: IEvento) => {
-    setSelectedEvento(selectedEvento);
-    setShowModal(!showModal);
-  };
+  // const handleEditModal = (selectedEvento: IEvento) => {
+  //   setSelectedEvento(selectedEvento);
+  //   setShowModal(!showModal);
+  // };
 
   return (
     <ParallaxScrollView
@@ -110,7 +115,18 @@ export default function EventosListView() {
       />
 
       <ThemedView style={styles.container}>
-        {eventos.map((evento) => (
+
+        {
+          eventos.map(evento => 
+            <TouchableOpacity key={evento.id} onPress={()=> navigateToDetails(evento)}>
+              <Evento
+                titulo={evento.titulo}
+                descricao={evento.descricao}
+                data={evento.data} />
+            </TouchableOpacity>
+          )
+        }
+        {/* {eventos.map((evento) => (
           <View style={styles.boxContainer} key={evento.id}>
             <Evento
               titulo={evento.titulo}
@@ -127,7 +143,7 @@ export default function EventosListView() {
                 <MaterialIcons name="delete-forever" size={24} color="black" />
               </TouchableOpacity>
           </View>
-        ))}
+        ))} */}
       </ThemedView>
     </ParallaxScrollView>
   );
